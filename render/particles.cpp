@@ -133,28 +133,28 @@ void emitter2D::_spawn(uint c, const vec2f &pos)
     _data[c].speed.currentNode = 0;
     _data[c].direction.currentNode = 0;
 
-    _data[c].color.values.resize(particles.color.size());
+    _data[c].color.resize(particles.color.size());
     for(uint i = 0; i < particles.color.size(); i++)
     {
         _data[c].color.values[i].value = particles.color[i].value+particles.color[i].spread*random3();
         _data[c].color.values[i].time  = particles.color[i].time;
     }
 
-    _data[c].alpha.values.resize(particles.alpha.size());
+    _data[c].alpha.resize(particles.alpha.size());
     for(uint i = 0; i < particles.alpha.size(); i++)
     {
         _data[c].alpha.values[i].value = particles.alpha[i].value+particles.alpha[i].spread*random();
         _data[c].alpha.values[i].time  = particles.alpha[i].time;
     }
 
-    _data[c].scale.values.resize(particles.scale.size());
+    _data[c].scale.resize(particles.scale.size());
     for(uint i = 0; i < particles.scale.size(); i++)
     {
         _data[c].scale.values[i].value = particles.scale[i].value+particles.scale[i].spread*random();
         _data[c].scale.values[i].time  = particles.scale[i].time;
     }
 
-    _data[c].direction.values.resize(particles.angle.size());
+    _data[c].direction.resize(particles.angle.size());
     for(uint i = 0; i < particles.angle.size(); i++)
     {
         float temp = particles.angle[i].value+particles.angle[i].spread*random()+mathEmitterParam(currentNodes.x, angle, val);
@@ -162,7 +162,7 @@ void emitter2D::_spawn(uint c, const vec2f &pos)
         _data[c].direction.values[i].time = particles.angle[i].time;
     }
 
-    _data[c].speed.values.resize(particles.speed.size());
+    _data[c].speed.resize(particles.speed.size());
     for(uint i = 0; i < particles.speed.size(); i++)
     {
         _data[c].speed.values[i].value = particles.speed[i].value+particles.speed[i].spread*random();
@@ -657,6 +657,55 @@ emitter2D* effect2D::_getEmitter(uint i)
     }
 }
 
+///================================================
+
+template<typename T>
+void _particleParam<T>::resize(size_t s)
+{
+    if(s == size)
+        return;
+    delete [] values;
+    size = s;
+    if(!s)
+    {
+        values = 0;
+        return;
+    }
+    values = new node[size];
+}
+
+template<typename T>
+_particleParam<T>::_particleParam()
+{
+    values = 0;
+    size = 0;
+}
+
+template<typename T>
+_particleParam<T>::~_particleParam()
+{
+    if(values)
+        delete [] values;
+}
+
+
+template<typename T>
+T _particleParam<T>::math(float a)
+{
+    if(currentNode == size || size == 1)
+        return values[currentNode].value;
+
+    if(values[currentNode].time > a)
+        return values[currentNode].value;
+
+    if(values[currentNode+1].time < a)
+        if(++currentNode == size-1)
+            return values[currentNode].value;
+
+    float ctimer = (a-values[currentNode].time)/(values[currentNode+1].time-values[currentNode].time);
+    return mix(values[currentNode+1].value, values[currentNode].value, ctimer);
+}
+
 }
 ///================================================
 
@@ -693,11 +742,6 @@ float urandom()
 float random()
 {
     return urandom()*2.0f-1.0f;
-}
-
-vec4f random4()
-{
-    return vec4f(random(), random(), random(), random());
 }
 
 vec3f random3()

@@ -12,30 +12,19 @@ namespace render{
 template<typename T>
 struct _particleParam
 {
-    uint currentNode;
-
     struct node
     {
         float time;
         T value;
     };
-    std::vector<node> values;
+    uint currentNode;
+    size_t size;
+    node *values;
 
-    T math(float a)
-    {
-        if(currentNode == values.size()-1 || values.size() == 1)
-            return values[currentNode].value;
-
-        if(values[currentNode].time > a)
-            return values[currentNode].value;
-
-        if(values[currentNode+1].time < a)
-            if(++currentNode == values.size()-1)
-                return values[currentNode].value;
-
-        float ctimer = (a-values[currentNode].time)/(values[currentNode+1].time-values[currentNode].time);
-        return mix(values[currentNode+1].value, values[currentNode].value, ctimer);
-    }
+    void resize(size_t);
+    _particleParam();
+    ~_particleParam();
+    T math(float a);
 };
 
 template<typename T>
