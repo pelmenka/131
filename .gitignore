@@ -77,5 +77,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-gui/gui/object.cpp
-render/primitives.h
