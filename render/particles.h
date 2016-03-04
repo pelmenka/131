@@ -99,7 +99,7 @@ private:
     bool _running, _nothingToDraw;
     vec2f _gravityModifier;
     float _emissionCount;
-
+    vec2f _oldPos;
     uint _drawCount;
     friend class effect2D;
     vec3u currentNodes;

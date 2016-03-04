@@ -53,14 +53,21 @@ void emitter2D::update(const vec2f &pos)
 
     if(param.workTime+_startTime >= glfwGetTime())
         _emissionCount += mathEmitterParam(currentNodes.z, emissionSpeed, val)*delta;
+    if(_emissionCount > param.maxParticles)
+        _emissionCount = param.maxParticles;
+    float maxSpawn = _emissionCount;
     _drawCount = 0;
     for(uint i = 0; i < _data.size(); i++)
     {
-        if(!_update(i, delta)){
+        if(!_update(i, delta))
             if(_running
             && _emissionCount > 0)
-                _spawn(i, pos);}
+            {
+                float d = _emissionCount/maxSpawn;
+                _spawn(i, pos*d+_oldPos*(1.0f-d));
+            }
     }
+    _oldPos = pos;
 }
 
 bool emitter2D::_update(uint c, float delta)
