@@ -24,12 +24,23 @@ namespace render
         add
     };
 
+    struct _camInfo
+    {
+        vec3f pos;
+        vec3f angle;
+    };
+
+    extern _camInfo camera;
+
     void initRender();
     void closeRender();
 
     void setClearColor(const vec4f& = vec4f(0, 0, 0, 1));
     void clearScreen();
     void endDraw();
+
+    void translate(const vec3f&);
+    void rotate(const vec3f&);
 
     void mode2D(vec2i size = vec2f(-1), const vec2i &offset = vec2f());
     void mode3D(float fov = 60, vec2i size = vec2f(-1));

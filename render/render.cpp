@@ -59,6 +59,8 @@ const size_t meshBufferSize = 0xfff;
 
 namespace render
 {
+
+    _camInfo camera;
     void setClearColor(const vec4f &color)
     {
         glClearColor(color.x, color.y, color.z, color.w);
@@ -67,6 +69,18 @@ namespace render
     void clearScreen()
     {
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    }
+
+    void translate(const vec3f &tr)
+    {
+        camera.pos += tr;
+        glTranslatef(tr.x, tr.y, tr.z);
+    }
+
+    void rotate(const vec3f &rt)
+    {
+        camera.angle += rt;
+        glRotatef(1, rt.x, rt.y, rt.z);
     }
 
     void initRender()
@@ -122,6 +136,7 @@ namespace render
         if(size.y == -1) size.y = window::getSize().y;
         glLoadIdentity();
         gluOrtho2D(offset.x, size.x, size.y, offset.y);
+        glTranslatef(camera.pos.x, camera.pos.y, camera.pos.z);
     }
 
     void mode3D(float fov, vec2i size)
@@ -231,8 +246,24 @@ namespace render
         if(_oldState.drawType != 2 || _count + count > meshBufferSize)
             endDraw();
         _oldState.drawType = 2;
-        memcpy(&_tex2D[_count], data, count*sizeof(type2D::texVert));
-        _count += count;
+        uint addr = 0;
+        while(count)
+        {
+            if(count >= meshBufferSize)
+            {
+                _count = meshBufferSize;
+                memcpy(_tex2D, &data[addr], meshBufferSize*sizeof(type2D::texVert));
+                endDraw();
+                count -= meshBufferSize;
+                addr += meshBufferSize;
+            }else
+            {
+                _count += count;
+                memcpy(_tex2D, &data[addr], count*sizeof(type2D::texVert));
+                endDraw();
+                break;
+            }
+        }
     }
 
     void _addParticles2D(const type2D::particle *data, uint count)
@@ -252,7 +283,7 @@ namespace render
                 addr += meshBufferSize;
             }else
             {
-                _count = count;
+                _count += count;
                 memcpy(_part2D, &data[addr], count*sizeof(type2D::particle));
                 endDraw();
                 break;
