@@ -9,25 +9,38 @@ GLFWwindow *handle = 0;
 uchar inputKeys[GLFW_KEY_LAST+1] = {0};
 int lastChar, scroll;
 vec2d cursorPos;
+double _oldTime;
 
 namespace window
 {
+
+double deltaTime;
 
 void createWindow(const vec2i &size, const std::string &name)
 {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    //glfwWindowHint(GLFW_SAMPLES, 16);
     handle = glfwCreateWindow(size.x, size.y, name.c_str(), 0, 0);
     glfwMakeContextCurrent(handle);
     glfwSwapInterval(1);
     glewInit();
     glfwSetKeyCallback(handle, [](GLFWwindow*, int key, int, int act, int){inputKeys[key] = act;});
+    glfwSetMouseButtonCallback(handle, [](GLFWwindow*, int key, int act, int){inputKeys[key] = act;});
     glfwSetWindowSizeCallback(handle, [](GLFWwindow*, int x, int y){render::viewport(vec2u(x, y));});
     glfwSetCursorPosCallback(handle, [](GLFWwindow*, double x, double y){cursorPos = vec2d(x, y);});
+
+
+    _oldTime = 0;
+    deltaTime = 0;
 }
 
 void swapBuffers()
 {
+    deltaTime = glfwGetTime()-_oldTime;
+    _oldTime = glfwGetTime();
+    if(deltaTime < 0.016667)
+        usleep(1667-int((deltaTime)*1000));
     glfwSwapBuffers(handle);
     lastChar = 0;
     scroll = 0;

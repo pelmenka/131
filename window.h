@@ -4,6 +4,8 @@
 
 namespace window
 {
+    extern double deltaTime;
+
     void createWindow(const vec2i &size, const std::string &name);
     void swapBuffers();
     void closeWindow();
