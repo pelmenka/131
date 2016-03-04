@@ -35,6 +35,7 @@ public:
     using textureAtlasNode::angle;
     using textureAtlasNode::scale;
     using textureAtlasNode::center;
+    using textureAtlasNode::color;
     const textureAtlas *parent() const;
     icon():_parent(0){};
     void draw(const vec2f& = vec2f());

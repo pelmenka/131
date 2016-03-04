@@ -50,7 +50,7 @@ bool textureAtlas::load(const std::string &path, bool smooth)
     elements.reserve(elCount);
 
     if(!texture::load(path.substr(0,path.rfind('/')+1)+element->Attribute("source"), smooth))
-        return nullptr;
+        return 0;
 
     element = element->FirstChildElement("sprite");
 
