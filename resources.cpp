@@ -4,19 +4,19 @@
 
 using namespace tinyxml2;
 
+#define TEXTURES_PATH "data/textures/"
+
 namespace resources
 {
 
-render::image games, icons, arrows;
+render::image hero;
+render::textureAtlas bullets;
 
 void init()
 {
-    games.load("data/textures/gameList.png");
-    games.parts = {2, 2};
-    icons.load("data/textures/icons.png");
-    icons.parts = {3, 1};
-    arrows.load("data/textures/arrows.png");
-    arrows.parts = {2, 1};
+    hero.load(TEXTURES_PATH"hero.png");
+    hero.center = vec2d(.5);
+    bullets.load("data/textures/bullet.atlas", 1);
 }
 
 void free()

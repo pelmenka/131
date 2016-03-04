@@ -11,6 +11,8 @@
 #include "color.h"
 #include "render/render.h"
 #include "render/particles.h"
+#include "hero.h"
+#include "level.h"
 
 void init();
 void close();
@@ -19,22 +21,20 @@ void _glfwError(int, const char*);
 int main()
 {
     init();
-    render::effect2D test("soul.xml");
-    test.start();
-    render::image img("data.png");
-    render::textureAtlas atlas("data/textures/particles.atlas");
-
-    render::icon icon = atlas.getIcon(3);
-
+    resources::init();
+    hero testHero;
+    level::init();
     while(!window::shouldClose())
     {
-        test.pos = input::getCursor();
-        test.update();
+        testHero.update();
+        level::update(&testHero);
+
         render::clearScreen();
         render::mode2D();
-        //img.draw();
-        test.draw();
-        icon.draw(vec2f(50));
+
+        testHero.draw();
+        level::draw();
+
         render::endDraw();
         window::swapBuffers();
         glfwPollEvents();

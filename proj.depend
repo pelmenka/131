@@ -36606,7 +36606,7 @@
 1437161970 d:\prog\131\src\base64.h
 	"common.h"
 
-1009843618 d:\prog\131\src\common.h
+1009842148 d:\prog\131\src\common.h
 	<initializer_list>
 
 1448556918 source:d:\prog\131\src\color.cpp
@@ -36682,7 +36682,7 @@
 	<vector>
 	<string>
 
-1456340485 d:\prog\131\src\render\render.h
+1009836710 d:\prog\131\src\render\render.h
 	<list>
 	"../common.h"
 	"primitives.h"
@@ -36698,13 +36698,13 @@
 1449948090 d:\prog\131\src\render\type.h
 	"../common.h"
 
-1456140207 d:\prog\131\src\render\shader.h
+1456140206 d:\prog\131\src\render\shader.h
 	<list>
 	<string>
 	"object.h"
 	"../common.h"
 
-1456138471 d:\prog\131\src\render\object.h
+1456138470 d:\prog\131\src\render\object.h
 
 1009842134 d:\prog\131\src\render\texture.h
 	<string>
@@ -36716,7 +36716,7 @@
 	"../common.h"
 	"object.h"
 
-1009845181 d:\prog\131\src\render\atlas.h
+1009845618 d:\prog\131\src\render\atlas.h
 	"texture.h"
 	"render.h"
 	"primitives.h"
@@ -36737,7 +36737,7 @@
 	"../gui.h"
 	"../../common.h"
 
-1456154163 source:d:\prog\131\src\gui\gui\render.cpp
+1456154162 source:d:\prog\131\src\gui\gui\render.cpp
 	"../gui.h"
 	"../../render/render.h"
 
@@ -36745,10 +36745,10 @@
 	"../gui.h"
 	"../../input.h"
 
-1009835015 d:\prog\131\src\input.h
+1009835014 d:\prog\131\src\input.h
 	"common.h"
 
-1456154185 source:d:\prog\131\src\gui\gui\textbox.cpp
+1456154184 source:d:\prog\131\src\gui\gui\textbox.cpp
 	<time.h>
 	"textBox.h"
 	"../../input.h"
@@ -36763,7 +36763,7 @@
 1450886042 d:\prog\131\src\log.h
 	<string>
 
-1009845387 source:d:\prog\131\src\render\atlas.cpp
+1009848976 source:d:\prog\131\src\render\atlas.cpp
 	"atlas.h"
 	<math.h>
 	<tinyxml2.h>
@@ -36804,7 +36804,7 @@
 	<GL/glew.h>
 	"render.h"
 
-1456413681 source:d:\prog\131\src\render\font.cpp
+1456413680 source:d:\prog\131\src\render\font.cpp
 	<tinyxml2.h>
 	"font.h"
 
@@ -36822,7 +36822,7 @@
 	"button.h"
 	"../../color.h"
 
-1009845433 source:d:\prog\131\src\main.cpp
+1009849262 source:d:\prog\131\src\main.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<time.h>
@@ -36836,25 +36836,28 @@
 	"color.h"
 	"render/render.h"
 	"render/particles.h"
+	"hero.h"
+	"level.h"
 
-1456090250 d:\prog\131\src\window.h
+1009841546 d:\prog\131\src\window.h
 	<string>
 	"common.h"
 
-1450654788 d:\prog\131\src\resources.h
+1009845220 d:\prog\131\src\resources.h
 	<string>
 	"render/image.h"
+	"render/atlas.h"
 	"render/shader.h"
 
 1456138456 source:d:\prog\131\src\render\object.cpp
 
-1456342487 source:d:\prog\131\src\render\image.cpp
+1456342486 source:d:\prog\131\src\render\image.cpp
 	<cmath>
 	"render.h"
 	"image.h"
 	"type.h"
 
-1456087951 source:d:\prog\131\src\render\shader.cpp
+1456087950 source:d:\prog\131\src\render\shader.cpp
 	<GL/glew.h>
 	<stdio.h>
 	<memory.h>
@@ -36886,12 +36889,12 @@
 
 1430940570 source:d:\prog\131\src\resource.rc
 
-1450654792 source:d:\prog\131\src\resources.cpp
+1009846436 source:d:\prog\131\src\resources.cpp
 	<tinyxml2.h>
 	"resources.h"
 	"color.h"
 
-1009835274 source:d:\prog\131\src\window.cpp
+1457033488 source:d:\prog\131\src\window.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<unistd.h>
@@ -36899,7 +36902,7 @@
 	"window.h"
 	"input.h"
 
-1456413248 source:d:\prog\131\src\render\render.cpp
+1009837064 source:d:\prog\131\src\render\render.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	"render.h"
@@ -36915,7 +36918,7 @@
 
 1454854992 d:\prog\131\src\main.h
 
-1456413695 source:d:\prog\131\src\render\text.cpp
+1456413694 source:d:\prog\131\src\render\text.cpp
 	<GL/glew.h>
 	<string.h>
 	<string>
@@ -36926,7 +36929,7 @@
 	"text.h"
 	"../window.h"
 
-1456412274 source:d:\prog\131\src\render\particles.cpp
+1009833318 source:d:\prog\131\src\render\particles.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<tinyxml2.h>
@@ -36939,10 +36942,34 @@
 	"../color.h"
 	"../window.h"
 
-1456530615 d:\prog\131\src\render\particles.h
+1009833248 d:\prog\131\src\render\particles.h
 	"../common.h"
 	<vector>
 	<string>
 	"buffer.h"
 	"atlas.h"
+
+1009848568 source:d:\prog\131\src\hero.cpp
+	"render/primitives.h"
+	"resources.h"
+	"hero.h"
+	"window.h"
+	"input.h"
+	"color.h"
+	<cmath>
+	"level.h"
+
+1009848170 d:\prog\131\src\hero.h
+	"common.h"
+
+1009849246 d:\prog\131\src\level.h
+	"common.h"
+	"hero.h"
+
+1457020411 source:d:\prog\131\src\level.cpp
+	"level.h"
+	"hero.h"
+	"resources.h"
+	"window.h"
+	<cmath>
 

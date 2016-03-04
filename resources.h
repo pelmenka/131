@@ -3,11 +3,13 @@
 
 #include <string>
 #include "render/image.h"
+#include "render/atlas.h"
 #include "render/shader.h"
 
 namespace resources
 {
-extern render::image games, icons, arrows;
+extern render::image hero;
+extern render::textureAtlas bullets;
 void init();
 void free();
 }

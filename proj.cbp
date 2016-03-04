@@ -66,7 +66,11 @@
 		<Unit filename="gui/gui/slider.cpp" />
 		<Unit filename="gui/gui/textBox.cpp" />
 		<Unit filename="gui/gui/textBox.h" />
+		<Unit filename="hero.cpp" />
+		<Unit filename="hero.h" />
 		<Unit filename="input.h" />
+		<Unit filename="level.cpp" />
+		<Unit filename="level.h" />
 		<Unit filename="log.cpp" />
 		<Unit filename="log.h" />
 		<Unit filename="main.cpp" />
