@@ -149,6 +149,11 @@ struct vec2
         return vec2<T>(x-a.x, y-a.y);
     }
 
+    inline vec2<T> operator-() const noexcept
+    {
+        return vec2<T>(-x, -y);
+    }
+
     template <typename S>
     inline vec2<T> operator*(const S a) const noexcept
     {
@@ -236,11 +241,13 @@ struct vec3
 
     vec3():x(0),y(0),z(0){}
 
-    template<typename S>
-    vec3(const S &a):x(a),y(a),z(a){}
+
 
     template<typename A, typename B, typename C>
     vec3(const A _1, const B _2, const C _3):x(_1),y(_2),z(_3){}
+
+    template<typename A>
+    vec3(const vec2<A> &_1):x(_1.x),y(_1.y),z(0){}
 
     template<typename A, typename B>
     vec3(const vec2<A> &_1, const B _2 = 0):x(_1.x),y(_1.y),z(_2){}
@@ -250,6 +257,9 @@ struct vec3
 
     template<typename S>
     vec3(const vec3<S> &a):x(a.x),y(a.y),z(a.z){}
+
+    template<typename S>
+    vec3(const S &a):x(a),y(a),z(a){}
 
     vec3(std::initializer_list<T> a):vec3()
     {
