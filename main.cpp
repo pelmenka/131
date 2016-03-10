@@ -13,6 +13,8 @@
 #include "render/particles.h"
 #include "hero.h"
 #include "level.h"
+#include "render/model.h"
+#include "render/text.h"
 
 void init();
 void close();
@@ -21,20 +23,23 @@ void _glfwError(int, const char*);
 int main()
 {
     init();
-    resources::init();
+    /*resources::init();
     hero testHero;
-    level::init();
+    level::init();*/
+    //render::setClearColor(vec4f(0, 1, 0, 1));
+
+    vec2f p(.5);
+
     while(!window::shouldClose())
     {
-        testHero.update();
-        level::update(&testHero);
-
+        if(input::getKey(GLFW_KEY_LEFT))
+            p.x -= 0.1;
+        if(input::getKey(GLFW_KEY_RIGHT))
+            p.x += 0.1;
         render::clearScreen();
         render::mode2D();
-
-        testHero.draw();
-        level::draw();
-
+        render::primitives2d::fillColor = vec4f(0, 0, 1, 1);
+        render::primitives2d::quad(vec2f(-1, -0.5), p);
         render::endDraw();
         window::swapBuffers();
         glfwPollEvents();

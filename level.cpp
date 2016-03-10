@@ -1,5 +1,6 @@
 #include "level.h"
 #include "hero.h"
+#include "render/particles.h"
 #include "resources.h"
 #include "window.h"
 #include <cmath>
@@ -15,10 +16,12 @@ public:
     void hit(enemy*);
 
     bool isAlive() const;
+
+    vec2f pos, _oldPos;
 private:
     render::icon sprite;
+    render::effect2D &blood;
     float angle;
-    vec2f pos, _oldPos;
     vec2f speed;
     float time;
 };
@@ -34,7 +37,7 @@ void drawBullets();
 
 void level::init()
 {
-    enemies[0].spawn(vec2f(800), 400, 5);
+    enemies[0].spawn(vec2f(800), 400, 5000);
 }
 
 void level::update(hero* h)
@@ -67,26 +70,35 @@ void updateBullets()
         if(i.isAlive())
         {
             i.update();
+            for(auto &j: enemies)
+                if(j.isAlive())
+                {
+                    if(j.collide(i.pos))
+                        i.hit(&j);
+                }
         }
+    resources::bloodEffect.update();
 }
 
 void drawBullets()
 {
     for(auto &i: bulletsList)
         i.draw();
+    resources::bloodEffect.draw();
 }
 
 
-bullet::bullet()
+bullet::bullet():blood(resources::bloodEffect)
 {
+    //blood = resources::bloodEffect;
     time = -1;
-
 }
 
 void bullet::spawn(vec2f p, float a, float s, float t)
 {
     sprite = resources::bullets.getIcon(0);
     sprite.scale = vec2f(2);
+
     time = t;
     pos = p;
     _oldPos = p;
@@ -94,7 +106,7 @@ void bullet::spawn(vec2f p, float a, float s, float t)
     angle = a;
     speed *= s;
     sprite.angle = -angle;
-    sprite.color = rgba(1, 0.9, 0.6, 1);
+    //sprite.color = rgba(1, 0.9, 0.6, 1);
 }
 
 bool bullet::update()
@@ -114,6 +126,16 @@ void bullet::draw()
     if(time <= 0)
         return;
     sprite.draw(pos);
+}
+
+void bullet::hit(enemy *en)
+{
+    time = -1;
+    en->hit(1, speed*0.04);
+    blood[0].param.pos = pos;
+    blood[0].particles.angle[0].value = -angle*RTOD+90;
+    blood[0].start();
+    return;
 }
 
 bool bullet::isAlive() const

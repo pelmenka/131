@@ -25,15 +25,14 @@ private:
     void _alloc();
 };
 
-class vertexBuffer
+class vertexBuffer:_object
 {
-    uint obj, mode;
 public:
     vertexBuffer();
     ~vertexBuffer();
 
     void gen();
-    void free(bool = 0);
+    void free();
 
     void bind(int = 0);
     void unbind();
@@ -54,8 +53,11 @@ public:
 
     static void freeAll();
 private:
+    uint obj, mode;
+
     void _data(uint, const void*, uint);
     void _subData(uint, const void*, int);
+    void _alloc();
 };
 }
 

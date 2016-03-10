@@ -1,5 +1,6 @@
 #include "atlas.h"
-#include <math.h>
+#include <GL/glew.h>
+#include <cmath>
 #include <tinyxml2.h>
 #include <list>
 #include "../log.h"
@@ -51,7 +52,8 @@ bool textureAtlas::load(const std::string &path, bool smooth)
 
     if(!texture::load(path.substr(0,path.rfind('/')+1)+element->Attribute("source"), smooth))
         return 0;
-
+    parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP);
+    parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP);
     element = element->FirstChildElement("sprite");
 
     for(int i = 0; i < elCount && element; i++, element = element->NextSiblingElement())
@@ -177,6 +179,11 @@ void icon::draw(const vec2f &pos)
 const vec2f &icon::getSize() const
 {
     return textureAtlasNode::size;
+}
+
+const vec2f *icon::getVertices() const noexcept
+{
+    return rotMatrix;
 }
 
 }

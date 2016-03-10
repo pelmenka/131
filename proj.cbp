@@ -83,6 +83,8 @@
 		<Unit filename="render/font.h" />
 		<Unit filename="render/image.cpp" />
 		<Unit filename="render/image.h" />
+		<Unit filename="render/model.cpp" />
+		<Unit filename="render/model.h" />
 		<Unit filename="render/object.h" />
 		<Unit filename="render/particles.cpp" />
 		<Unit filename="render/particles.h" />

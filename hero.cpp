@@ -106,6 +106,8 @@ void shotgun::shot()
 
 ///=====================
 
+bool triCollide(const vec2f&, const vec2f&, const vec2f&, const vec2f&);
+
 enemy::enemy()
 {
     health = -1;
@@ -116,6 +118,7 @@ void enemy::spawn(const vec2f &p, float s, float h)
     pos = p;
     speed = s;
     health = h;
+    sprite = resources::entities.getIcon(0);
 }
 
 void enemy::update(hero *h)
@@ -136,27 +139,54 @@ void enemy::update(hero *h)
     else time -= window::deltaTime;
 }
 
-void enemy::hit(float damage)
+void enemy::hit(float damage, const vec2f &dir)
 {
     health -= damage;
-    if(health < 0)
+    pos += dir;
+    if(health <= 0)
         time = 1;
 }
 
 void enemy::draw()
 {
     if(health > 0)
-        render::primitives2d::circle(pos, 32, Hex2RGBA(0xf44336), -angle*RTOD, 4);
+    {
+        sprite.angle = -angle;
+        sprite.draw(pos);
+    }
     else if(time > 0)
-        render::primitives2d::circle(pos, 32, Hex2RGBA(0xf44336, time), -angle*RTOD, 4);
+    {
+        sprite.color.w = time;
+        sprite.draw(pos);
+    }
 }
 
-bool enemy::isAlive()
+inline bool enemy::isAlive() const noexcept
 {
-    return health > 0 || time > 0;
+    return health > 0;
 }
 
-bool enemy::AABB()
+bool enemy::collide(const vec2f &p) const
 {
+    if(!isAlive())
+        return 0;
+    vec2f vert[6];
+    memcpy(vert, sprite.getVertices(), sizeof(vec2f)*6);
+    for(int i = 0; i < 6; i++)
+        vert[i] += pos;
+    return triCollide(p, vert[0], vert[1], vert[2]) || triCollide(p, vert[3], vert[4], vert[5]);
+}
 
+bool triCollide(const vec2f &p, const vec2f &A, const vec2f &B, const vec2f &C)
+{
+    vec3f r;
+    r.x = (A.x-p.x)*(B.y-A.y)-(B.x-A.x)*(A.y-p.y);
+    r.y = (B.x-p.x)*(C.y-B.y)-(C.x-B.x)*(B.y-p.y);
+    r.z = (C.x-p.x)*(A.y-C.y)-(A.x-C.x)*(C.y-p.y);
+
+    if((r.x < 0 && r.y < 0 && r.z < 0)
+    || (r.x ==0 && r.y ==0 && r.z == 0)
+    || (r.x > 0 && r.y > 0 && r.z > 0))
+        return 1;
+    return 0;
 }

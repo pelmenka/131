@@ -3,8 +3,6 @@
 #include "buffer.h"
 #include "../log.h"
 
-std::list<render::vertexBuffer*> VBOlist;
-
 render::vertexBuffer *oldBuffer = 0;
 render::vertexArray *oldArray = 0;
 
@@ -78,27 +76,33 @@ vertexBuffer::vertexBuffer()
 
 vertexBuffer::~vertexBuffer()
 {
-    if(obj)
-        free();
+    free();
 }
 
 void vertexBuffer::gen()
 {
     if(glIsBuffer(obj))
         return;
+    _alloc();
     glGenBuffers(1, &obj);
-    VBOlist.push_back(this);
 }
 
-void vertexBuffer::free(bool end)
+void vertexBuffer::_alloc()
 {
-    if(!glIsBuffer(obj))
-        return;
-    unbind();
-    glDeleteBuffers(1, &obj);
-    obj = 0;
-    if(!end) VBOlist.remove(this);
-    oldBuffer = 0;
+    _addToList();
+}
+
+void vertexBuffer::free()
+{
+    if(obj)
+    {
+        unbind();
+        glDeleteBuffers(1, &obj);
+        obj = 0;
+        if(oldBuffer == this)
+            oldBuffer = 0;
+    }
+    _removeFromList();
 }
 
 void vertexBuffer::bind(int m)
@@ -136,14 +140,6 @@ void vertexBuffer::_subData(size_t size, const void *data, int offset)
 {
     bind();
     glBufferSubData(mode, offset, size, data);
-}
-
-void vertexBuffer::freeAll()
-{
-    for(auto i: VBOlist)
-        i->free(1);
-
-    VBOlist.clear();
 }
 
 }

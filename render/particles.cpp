@@ -37,7 +37,7 @@ void emitter2D::update(const vec2f &pos)
     float delta = glfwGetTime() - _oldTime;
     _oldTime = glfwGetTime();
 
-
+    printf("%f\n", param.workTime);
     if(param.workTime+_startTime < glfwGetTime())
     {
         if(param.looped)
@@ -183,10 +183,10 @@ void emitter2D::draw()
 {
     if(!_data.size() || !_drawCount)
         return;
-    if(param.blendMode)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if(!param.blendMode)
+        setBlendMode(blendMode::normal);
     else
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        setBlendMode(blendMode::add);
 
     if(_atlas)
         _atlas->bind();
@@ -296,7 +296,7 @@ bool effect2D::load(const std::string &path)
         tinyxml2::XMLElement *element, *nElement, *pElement;
 
         root->QueryAttribute("maxParticles", &tempEmitter->param.maxParticles);
-        root->QueryAttribute("timer", &tempEmitter->param.workTime);
+        root->QueryAttribute("time", &tempEmitter->param.workTime);
         root->QueryAttribute("looped", &tempEmitter->param.looped);
         tempEmitter->setTextureAtlas(0);
         if(element = root->FirstChildElement("atlas"))

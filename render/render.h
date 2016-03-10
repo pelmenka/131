@@ -52,7 +52,7 @@ namespace render
 
     namespace defaultResources
     {
-        extern shader regularShader, primitivesShader, particlesShader, textShader, guiShader;
+        extern shader regularShader, primitivesShader, particlesShader, textShader, guiShader, regular3DShader;
         extern texture guiTextures[2];
         extern font textFont;
     }
@@ -71,6 +71,9 @@ namespace render
         void _addParticles2D(const type2D::particle*, uint);
 
         void _addTriangles3D(const type3D::texVert*, uint);
+
+        const float *getMatrix2D();
+        const float *getMatrix3D();
 
         extern std::list<render::_object*> objectList;
     }

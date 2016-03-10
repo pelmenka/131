@@ -1,15 +1,12 @@
-#ifndef PRIMITIVES2_H_INCLUDED
-#define PRIMITIVES2_H_INCLUDED
+#pragma once
 
 #include "render.h"
 #include "type.h"
 
-#define BEGIN_PRIMITIVES2D_NAMESPACE namespace render{namespace primitives2d{
-#define END_PRIMITIVES2D_NAMESPACE }}
-
 typedef vec4f rgba;
 
-BEGIN_PRIMITIVES2D_NAMESPACE
+namespace render{
+namespace primitives2d{
 
 extern rgba pointColor, lineColor, fillColor;
 
@@ -57,7 +54,6 @@ void ringArkBorder(const vec2f &pos, float radius, float radius2, float angle, f
 
 void drawGui(const vec2f& pos, float type, const vec2f& size, const rgba& color);
 
+}
 
-END_PRIMITIVES2D_NAMESPACE
-
-#endif // PRIMITIVES2_H_INCLUDED
+}

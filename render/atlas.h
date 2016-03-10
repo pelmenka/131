@@ -40,6 +40,7 @@ public:
     icon():_parent(0){};
     void draw(const vec2f& = vec2f());
     const vec2f& getSize() const;
+    const vec2f *getVertices() const noexcept;
 private:
     textureAtlas *_parent;
 };

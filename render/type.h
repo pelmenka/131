@@ -37,6 +37,7 @@ namespace render
         {
             vec3f vert;
             vec2f texCoord;
+            vec3f normal;
             rgba color;
         };
 

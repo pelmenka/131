@@ -1,11 +1,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "render.h"
+#include <stddef.h>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
+#include "render.h"
 #include "shader.h"
 #include "../main.h"
 #include "../color.h"
 #include "../window.h"
+#include "../log.h"
 #include "font.h"
 
 #include "texture.h"
@@ -21,6 +25,8 @@ struct _state
     uint drawType;
     const render::texture **bindedTextures;
     const render::shader *bindedShader;
+    vec2u windowSize;
+    vec2i offset;
 }_oldState;
 
 uint _count;
@@ -57,6 +63,8 @@ inline void _drawElements(T*, uint, uint, render::vertexArray*, render::vertexBu
 
 const size_t meshBufferSize = 0xfff;
 
+glm::mat4 mat2D, mat3D;
+
 namespace render
 {
 
@@ -64,6 +72,21 @@ namespace render
     void setClearColor(const vec4f &color)
     {
         glClearColor(color.x, color.y, color.z, color.w);
+    }
+
+    void setBlendMode(blendMode mode)
+    {
+        if(_oldState.blendMode == mode)
+            return;
+
+        switch(mode)
+        {
+        case blendMode::add:
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        default:
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        _oldState.blendMode = mode;
     }
 
     void clearScreen()
@@ -109,6 +132,7 @@ namespace render
 
     void closeRender()
     {
+        _log::out("\n============== clean up ================\n");
         while(_internal::objectList.size())
             _internal::objectList.back()->free();
         delete [] _vert2D;
@@ -136,7 +160,7 @@ namespace render
         if(size.y == -1) size.y = window::getSize().y;
         glLoadIdentity();
         gluOrtho2D(offset.x, size.x, size.y, offset.y);
-        glTranslatef(camera.pos.x, camera.pos.y, camera.pos.z);
+        mat2D = glm::ortho(offset.x, size.x, size.y, offset.y);
     }
 
     void mode3D(float fov, vec2i size)
@@ -152,6 +176,11 @@ namespace render
         if(size.x == -1) size.x = window::getSize().x;
         if(size.y == -1) size.y = window::getSize().y;
         gluPerspective(fov, float(size.x)/size.y, 0.1, 100);
+        glRotatef(camera.angle.x, 1, 0, 0);
+        glRotatef(camera.angle.y, 0, 1, 0);
+        glRotatef(camera.angle.z, 0, 0, 1);
+        glTranslatef(camera.pos.x, camera.pos.y, camera.pos.z);
+
     }
 
 
@@ -304,6 +333,7 @@ namespace render
     namespace defaultResources
     {
         shader regularShader, primitivesShader, particlesShader, textShader, guiShader;
+        shader regular3DShader;
         texture guiTextures[2];
         font textFont;
     }
@@ -311,22 +341,44 @@ namespace render
 
 void loadResources()
 {
+    _log::out("\n=================start loading default resources================\n");
     render::defaultResources::particlesShader.load("data/shaders/particles.vert", "data/shaders/particles.frag", render::shader::shaderType::particles, 1);
     render::defaultResources::primitivesShader.load("data/shaders/primitives.vert", "data/shaders/primitives.frag", render::shader::shaderType::primitives, 1);
+    render::defaultResources::primitivesShader.bindAttribLocation("vertex", 0);
+    render::defaultResources::primitivesShader.bindAttribLocation("color", 2);
+
     render::defaultResources::regularShader.load("data/shaders/regular.vert", "data/shaders/regular.frag", render::shader::shaderType::regular, 1);
+    render::defaultResources::regularShader.bindAttribLocation("vertex", 0);
+    render::defaultResources::regularShader.bindAttribLocation("texCoord", 1);
+    render::defaultResources::regularShader.bindAttribLocation("color", 2);
+
     render::defaultResources::textShader.load("data/shaders/text.vert", "data/shaders/text.frag", render::shader::shaderType::text, 1);
     render::defaultResources::guiShader.load("data/shaders/gui.vert", "data/shaders/gui.frag", render::shader::shaderType::gui, 1);
+    render::defaultResources::guiShader.uniform1i("tex1", 0);
     render::defaultResources::guiShader.uniform1i("tex2", 1);
+
+    render::defaultResources::guiShader.bindAttribLocation("vertex", 0);
+    render::defaultResources::guiShader.bindAttribLocation("texCoord", 1);
+    render::defaultResources::guiShader.bindAttribLocation("normal", 2);
+    render::defaultResources::guiShader.bindAttribLocation("color", 3);
+
+    render::defaultResources::regular3DShader.load("data/shaders/regular3D.vert", "data/shaders/regular3D.frag", render::shader::shaderType::regular3D, 1);
+    render::defaultResources::regular3DShader.bindAttribLocation("vertex", 0);
+    render::defaultResources::regular3DShader.bindAttribLocation("texCoord", 1);
+    render::defaultResources::regular3DShader.bindAttribLocation("normal", 2);
+    render::defaultResources::regular3DShader.bindAttribLocation("color", 3);
 
 
     render::defaultResources::guiTextures[0].load("data/textures/buttonShape.png", 1);
     render::defaultResources::guiTextures[1].load("data/textures/buttonColor.png", 1);
-    render::defaultResources::textFont.load("data/font");
 
     render::defaultResources::guiTextures[0].parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     render::defaultResources::guiTextures[0].parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     render::defaultResources::guiTextures[1].parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     render::defaultResources::guiTextures[1].parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    render::defaultResources::textFont.load("data/font");
+    _log::out("=================end loading default resources================\n\n");
 }
 
 ///=============================================================
@@ -367,24 +419,24 @@ void initBuffers()
 
     { //для точек и линий
         buffers2D.VAO[0].bind();
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(2);
         buffers2D.VBO[0].bind();
 
-        glVertexPointer(3, GL_FLOAT, sizeof(type2D::vertex), 0);
-        glColorPointer(4, GL_FLOAT, sizeof(type2D::vertex), (GLuint*)(sizeof(type2D::vertex::vert)));
+        glVertexAttribPointer(0, 2, GL_FLOAT, 0, sizeof(type2D::vertex), (GLuint*)(offsetof(type2D::vertex, vert))); //vertex
+        glVertexAttribPointer(2, 4, GL_FLOAT, 0, sizeof(type2D::vertex), (GLuint*)(offsetof(type2D::vertex, color))); //color rgba
     }
 
     { //для треугольников
         buffers2D.VAO[1].bind();
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
         buffers2D.VBO[1].bind();
 
-        glVertexPointer(2, GL_FLOAT, sizeof(type2D::texVert), 0);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(type2D::texVert), (GLuint*)(sizeof(type2D::texVert::vert)));
-        glColorPointer(4, GL_FLOAT, sizeof(type2D::texVert), (GLuint*)( sizeof(type2D::texVert::vert) + sizeof(type2D::texVert::texCoord)));
+        glVertexAttribPointer(0, 2, GL_FLOAT, 0, sizeof(type2D::texVert), (GLuint*)(offsetof(type2D::texVert, vert))); //vertex
+        glVertexAttribPointer(1, 2, GL_FLOAT, 0, sizeof(type2D::texVert), (GLuint*)(offsetof(type2D::texVert, texCoord))); //texCoord
+        glVertexAttribPointer(2, 4, GL_FLOAT, 0, sizeof(type2D::texVert), (GLuint*)(offsetof(type2D::texVert, color))); //color rgba
     }
 
     { //для частиц
@@ -402,14 +454,16 @@ void initBuffers()
     //(* 3D
     {
         buffers3D.VAO[1].bind();
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
         buffers3D.VBO[1].bind();
 
-        glVertexPointer(3, GL_FLOAT, sizeof(type3D::texVert), 0);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(type3D::texVert), (GLuint*)(sizeof(type3D::texVert::vert)));
-        glColorPointer(4, GL_FLOAT, sizeof(type3D::texVert), (GLuint*)( sizeof(type3D::texVert::vert) + sizeof(type3D::texVert::texCoord)));
+        glVertexAttribPointer(0, 3, GL_FLOAT, 0, sizeof(type3D::texVert), (GLuint*)(offsetof(type3D::texVert, vert))); //vertex
+        glVertexAttribPointer(1, 2, GL_FLOAT, 0, sizeof(type3D::texVert), (GLuint*)(offsetof(type3D::texVert, texCoord))); //texCoord
+        glVertexAttribPointer(2, 3, GL_FLOAT, 0, sizeof(type3D::texVert), (GLuint*)(offsetof(type3D::texVert, normal))); //normal
+        glVertexAttribPointer(3, 4, GL_FLOAT, 0, sizeof(type3D::texVert), (GLuint*)(offsetof(type3D::texVert, color))); //color rgba
     }
 
     /*{
@@ -423,6 +477,7 @@ void initBuffers()
         glTexCoordPointer(4, GL_FLOAT, sizeof(type3D::particle), (GLuint*)(sizeof(vec4f)));
         glColorPointer(4, GL_FLOAT, sizeof(type3D::particle), (GLuint*)( sizeof(vec4f) + sizeof(vec4f)));
     }*/
+    buffers3D.VAO[2].unbind();
 }
 
 ///===================================

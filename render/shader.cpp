@@ -1,43 +1,32 @@
 #include <GL/glew.h>
-#include <stdio.h>
+#include <cstdio>
 #include <memory.h>
-#include <list>
 #include "shader.h"
-#include "render.h"
 #include "../log.h"
-
-enum shaderError
-{
-    no_file = 0,
-    empty_file,
-    compile_error,
-    linking_error
-};
 
 namespace render{
 
 shader::shader()
 {
-    shaders[0] = 0;
-    shaders[1] = 0;
+    projectionMatrixName = "projectionMatrix";
+    viewMatrixName = "viewMatrix";
+    modelMatrixName = "modelMatrix";
+    _attachedShaders = 0;
     program = 0;
     standart = 0;
+    _linked = 0;
     type = shaderType::regular;
-}
-
-shader::shader(const char* vert, const char* frag, shaderType _type, bool _standart):shader()
-{
-    load(vert, frag, _type, _standart);
 }
 
 shader::~shader()
 {
-    if(program)
-        free();
+    free();
 }
 
 int shader::getUniformLocation(const std::string &name)
 {
+    if(!linked)
+        return -1;
     bind();
     for(auto &i: _uniformLoc)
         if(i.name == name)
@@ -47,99 +36,74 @@ int shader::getUniformLocation(const std::string &name)
     return loc;
 }
 
-bool shader::addFromFile(bool shad, const char* path)
+void shader::_alloc()
 {
-    const char *names[] = {"vertex", "fragment"};
-    FILE *src;
-    char *source;
-    _log::out("Loading %s shader: %s ", names[shad], path);
+    _addToList();
+}
+
+bool shader::attach(const std::string &path, uint s)
+{
+    if(_linked)
+        return;
+    if(s > SHADER_GEOMETRY)
+        return;
+
+    if(!program)
+        program = glCreateProgram();
+
+    uint types[3] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_GEOMETRY_SHADER};
+    const char *names[] = {"vertex", "fragment", "geometry"};
+    _log::out("Loading %s shader: %s ", names[s], path.c_str());
     try
     {
-        uint types[2] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
         int length;
 
-        if(!(src = fopen(path, "rt")))
+        if(!(src = fopen(path.c_str(), "rt")))
             throw "Failed to open file";
 
         fseek(src, 0, 2);
         if(!(length = ftell(src)))
             throw "File is empty";
         fseek(src, 0, 0);
-
-        length;
         source = new char[length+1];
         memset(source, 0, length+1);
         fread(source, 1, length, src);
 
-        if(glIsShader(shaders[shad]))
-        {
-            unbind();
-            glDetachShader(program, shaders[shad]);
-        }
+        if(!glIsShader(shaders[s]))
+            shaders[s] = glCreateShader(types[s]);
         else
-            shaders[shad] = glCreateShader(types[shad]);
+            glDetachShader(program, shaders[s]);
 
         const char *s = source;
-        glShaderSource(shaders[shad], 1, &s, 0);
-        glCompileShader(shaders[shad]);
+        glShaderSource(shaders[s], 1, &s, 0);
+        glCompileShader(shaders[s]);
         delete [] source;
-        if(!_compileOk(shaders[shad]))
-            throw "Failed to compile shader";
+
+        int status = 0;
+        glGetShaderiv(shaders[s], GL_COMPILE_STATUS, status);
+        if(!log)
+            throw "Compile Error";
+
+        glAttachShader(program, shaders[s]);
+
+        fclose(src);
     }
     catch(const char* s)
     {
         _log::out("[FAIL]\n%s\n", s);
+        _printError(shaders[shad]);
         if(src)
             fclose(src);
         return 0;
     }
-    fclose(src);
-
     _log::out("[ OK ]\n");
-
     return 1;
 }
 
-bool shader::addFromCode(bool shad, const char* source)
+bool shader::linkProgram()
 {
-    const char *names[] = {"vertex", "fragment"};
-    _log::out("Compiling %s shader from code -> ", names[shad]);
-    try
-    {
-        uint types[2] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-        if(glIsShader(shaders[shad]))
-        {
-            unbind();
-            glDetachShader(program, shaders[shad]);
-        }
-        else
-            shaders[shad] = glCreateShader(types[shad]);
-
-        const char *s = source;
-        glShaderSource(shaders[shad], 1, &s, 0);
-        glCompileShader(shaders[shad]);
-
-        if(!_compileOk(shaders[shad]))
-            throw "Failed to compile shader";
-    }
-    catch(const char* s)
-    {
-        _log::out("[FAIL]\n%s\n", s);
-        return 0;
-    }
-
-    _log::out("[ OK ]\n");
-
-    return 1;
-}
-
-void shader::compile()
-{
-    if(!glIsProgram(program))
-        program = glCreateProgram();
-
-    glAttachShader(program, shaders[0]);
-    glAttachShader(program, shaders[1]);
+    if(_linked)
+        return;
     glLinkProgram(program);
     int lenth;
 
@@ -147,49 +111,28 @@ void shader::compile()
     glGetProgramiv(program, GL_LINK_STATUS, &lenth);
     if(!lenth)
     {
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &lenth);
-        if(lenth)
-        {
-            char *mess = new char[lenth];
-            glGetProgramInfoLog(program, lenth, 0, mess);
-            _log::out("[FAIL]\n%s\n", mess);
-            delete [] mess;
-            return;
-        }
+        _log::out("[FAIL]\n", mess);
+        _printError(program);
+        return 0;
     }
-    _alloc();
     _log::out("[ OK ]\n");
+    _linked = 1;
+    return 1;
 }
 
-void shader::_alloc()
+bool shader::validate()
 {
-    _addToList();
-}
-
-bool shader::load(const char* vert, const char* frag, shaderType _type, bool _standart)
-{
-    if(addFromFile(0, vert) && addFromFile(1, frag))
-    {
-        standart = _standart;
-        type = _type;
-        compile();
-        return 1;
-    }
-    return 0;
-}
-
-bool shader::loadFromCode(const char* vert, const char* frag)
-{
-    if(addFromCode(0, vert) && addFromCode(1, frag))
-    {
-        compile();
-        return 1;
-    }
-    return 0;
+    if(!_linked) return;
+    glValidateProgram(program);
+    int s = -1;
+    glGetProgramiv(program, GL_VALIDATE_STATUS, &s);
+    _log::out("Validate shader %s\n", (s==1)?"[ OK ]":"[FAIL]");
+    return s;
 }
 
 void shader::bind()
 {
+    if(!_linked) return;
     if(render::getActiveShader() == this) return;
     render::_internal::_bindShader(this);
     glUseProgram(program);
@@ -200,13 +143,6 @@ void shader::unbind() const
     if(!render::getActiveShader()) return;
     glUseProgram(0);
     render::_internal::_bindShader(0);
-}
-
-bool shader::_compileOk(GLuint i)
-{
-    int log = 0;
-    glGetShaderiv(i, GL_COMPILE_STATUS, &log);
-    return log;
 }
 
 bool shader::_linkOk(GLuint i)
@@ -220,6 +156,8 @@ void shader::_printError(GLuint i)
 {
     int log = 0;
     glGetShaderiv(i, GL_INFO_LOG_LENGTH, &log);
+    if(!log)
+        return;
     char *mess = new char[log];
     glGetShaderInfoLog(i, log, 0, mess);
     _log::out("\t%s\n", mess);
@@ -228,7 +166,7 @@ void shader::_printError(GLuint i)
 
 void shader::free()
 {
-    unbind();
+    /*unbind();
     if(glIsProgram(program))
     {
         glDetachShader(program, shaders[0]);
@@ -242,8 +180,20 @@ void shader::free()
         {
             glDeleteShader(shaders[i]);
             shaders[i] = 0;
-        }
+        }*/
     _removeFromList();
+}
+
+void shader::bindAttribLocation(const std::string &name, uint val)
+{
+    glBindAttribLocation(program, val, name.c_str());
+}
+
+uint shader::getAttribLocation(const std::string &name)
+{
+    if(_linked)
+        return glGetAttribLocation(program, name.c_str());
+    return -1;
 }
 
 void shader::uniform1f(const std::string &name, float v1)
@@ -342,6 +292,11 @@ void shader::uniform4iv(const std::string &name, uint count, const int *v)
 {
     endDraw();
     glUniform4iv(getUniformLocation(name), count, v);
+}
+
+void shader::uniform4x4(const std::string &name, uint count, const float *v)
+{
+    glUniformMatrix4fv(getUniformLocation(name), count, 0, v);
 }
 
 }

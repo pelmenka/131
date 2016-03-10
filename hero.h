@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "render/atlas.h"
 
 class weapon;
 
@@ -27,15 +28,16 @@ class enemy
 public:
     enemy();
 
-    bool isAlive();
+    inline bool isAlive() const noexcept;
 
-    bool collide(const vec2f&, const vec2f&) const;
+    bool collide(const vec2f&) const;
 
-    void hit(float);
+    void hit(float, const vec2f&);
     void spawn(const vec2f &pos, float speed, float health);
     void update(hero*);
     void draw();
 private:
+    render::icon sprite;
     bool AABB(const vec2f&, const vec2f&) const;
     float time;
     float health;
@@ -75,13 +77,5 @@ class shotgun:public pistol
 {
 public:
     shotgun(hero *o):pistol(o){};
-    void shot();
-};
-
-class machinegun:public weapon
-{
-public:
-    pistol(hero *o):weapon(o){pressed = 0;};
-    void update();
     void shot();
 };
