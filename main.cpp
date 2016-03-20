@@ -15,6 +15,7 @@
 #include "level.h"
 #include "render/model.h"
 #include "render/text.h"
+#include "hud.h"
 
 void init();
 void close();
@@ -23,27 +24,36 @@ void _glfwError(int, const char*);
 int main()
 {
     init();
-    /*resources::init();
-    hero testHero;
-    level::init();*/
-    //render::setClearColor(vec4f(0, 1, 0, 1));
+    resources::init();
+    level::init();
+    hud::init();
 
-    vec2f p(.5);
+    render::effect2D cooler("data/fx/cooler.xml");
+
+    cooler.start();
 
     while(!window::shouldClose())
     {
-        if(input::getKey(GLFW_KEY_LEFT))
-            p.x -= 0.1;
-        if(input::getKey(GLFW_KEY_RIGHT))
-            p.x += 0.1;
+        hud::update();
+        level::update();
+        cooler.update();
+
+
         render::clearScreen();
         render::mode2D();
-        render::primitives2d::fillColor = vec4f(0, 0, 1, 1);
-        render::primitives2d::quad(vec2f(-1, -0.5), p);
+        cooler.draw();
+        level::draw();
+        render::endDraw();
+
+        render::camera.pos = vec3f(0);
+        render::mode2D();
+        hud::draw();
         render::endDraw();
         window::swapBuffers();
         glfwPollEvents();
     }
+    level::close();
+
     close();
 }
 

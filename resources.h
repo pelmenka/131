@@ -6,10 +6,9 @@
 
 namespace resources
 {
-extern render::image hero;
-extern render::textureAtlas bullets, entities;
-extern render::effect2D bloodEffect;
+extern render::image tiles;
+extern render::textureAtlas bullets, entities, guns;
+extern render::effect2D bloodEffect, coolEffect;
 
 void init();
-void free();
 }
