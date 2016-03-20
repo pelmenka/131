@@ -36682,7 +36682,7 @@
 	<vector>
 	<string>
 
-1009836710 d:\prog\131\src\render\render.h
+1457595339 d:\prog\131\src\render\render.h
 	<list>
 	"../common.h"
 	"primitives.h"
@@ -36691,32 +36691,32 @@
 	"texture.h"
 	"buffer.h"
 
-1450843286 d:\prog\131\src\render\primitives.h
+1457602909 d:\prog\131\src\render\primitives.h
 	"render.h"
 	"type.h"
 
-1449948090 d:\prog\131\src\render\type.h
+1457378301 d:\prog\131\src\render\type.h
 	"../common.h"
 
-1456140206 d:\prog\131\src\render\shader.h
+1457616538 d:\prog\131\src\render\shader.h
 	<list>
 	<string>
 	"object.h"
 	"../common.h"
 
-1456138470 d:\prog\131\src\render\object.h
+1457280920 d:\prog\131\src\render\object.h
 
-1009842134 d:\prog\131\src\render\texture.h
+1457243806 d:\prog\131\src\render\texture.h
 	<string>
 	<memory>
 	"../common.h"
 	"object.h"
 
-1450649452 d:\prog\131\src\render\buffer.h
+1457280799 d:\prog\131\src\render\buffer.h
 	"../common.h"
 	"object.h"
 
-1009845618 d:\prog\131\src\render\atlas.h
+1457178474 d:\prog\131\src\render\atlas.h
 	"texture.h"
 	"render.h"
 	"primitives.h"
@@ -36763,9 +36763,10 @@
 1450886042 d:\prog\131\src\log.h
 	<string>
 
-1009848976 source:d:\prog\131\src\render\atlas.cpp
+1457179404 source:d:\prog\131\src\render\atlas.cpp
 	"atlas.h"
-	<math.h>
+	<GL/glew.h>
+	<cmath>
 	<tinyxml2.h>
 	<list>
 	"../log.h"
@@ -36786,7 +36787,7 @@
 	<android/log.h>
 	<assert.h>
 
-1450649452 source:d:\prog\131\src\render\buffer.cpp
+1457281188 source:d:\prog\131\src\render\buffer.cpp
 	<GL/glew.h>
 	<list>
 	"buffer.h"
@@ -36822,7 +36823,7 @@
 	"button.h"
 	"../../color.h"
 
-1009849262 source:d:\prog\131\src\main.cpp
+1457614120 source:d:\prog\131\src\main.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<time.h>
@@ -36838,16 +36839,18 @@
 	"render/particles.h"
 	"hero.h"
 	"level.h"
+	"render/model.h"
+	"render/text.h"
 
 1009841546 d:\prog\131\src\window.h
 	<string>
 	"common.h"
 
-1009845220 d:\prog\131\src\resources.h
-	<string>
+1457181039 d:\prog\131\src\resources.h
 	"render/image.h"
 	"render/atlas.h"
 	"render/shader.h"
+	"render/particles.h"
 
 1456138456 source:d:\prog\131\src\render\object.cpp
 
@@ -36857,7 +36860,7 @@
 	"image.h"
 	"type.h"
 
-1456087950 source:d:\prog\131\src\render\shader.cpp
+1457616538 source:d:\prog\131\src\render\shader.cpp
 	<GL/glew.h>
 	<stdio.h>
 	<memory.h>
@@ -36866,7 +36869,7 @@
 	"render.h"
 	"../log.h"
 
-1456414428 source:d:\prog\131\src\render\primitives.cpp
+1457615053 source:d:\prog\131\src\render\primitives.cpp
 	<GL/glew.h>
 	<cmath>
 	"render.h"
@@ -36875,7 +36878,7 @@
 	"../window.h"
 	"../color.h"
 
-1009843072 source:d:\prog\131\src\render\texture.cpp
+1457243806 source:d:\prog\131\src\render\texture.cpp
 	<GL/glew.h>
 	<FreeImage.h>
 	<memory>
@@ -36889,27 +36892,32 @@
 
 1430940570 source:d:\prog\131\src\resource.rc
 
-1009846436 source:d:\prog\131\src\resources.cpp
+1457184317 source:d:\prog\131\src\resources.cpp
 	<tinyxml2.h>
 	"resources.h"
 	"color.h"
 
-1457033488 source:d:\prog\131\src\window.cpp
+1457596699 source:d:\prog\131\src\window.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<unistd.h>
 	"render/render.h"
 	"window.h"
 	"input.h"
+	"log.h"
 
-1009837064 source:d:\prog\131\src\render\render.cpp
+1457616538 source:d:\prog\131\src\render\render.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
+	<stddef.h>
+	<glm/mat4x4.hpp>
+	<glm/gtc/matrix_transform.hpp>
 	"render.h"
 	"shader.h"
 	"../main.h"
 	"../color.h"
 	"../window.h"
+	"../log.h"
 	"font.h"
 	"texture.h"
 	"buffer.h"
@@ -36929,7 +36937,7 @@
 	"text.h"
 	"../window.h"
 
-1009833318 source:d:\prog\131\src\render\particles.cpp
+1457255772 source:d:\prog\131\src\render\particles.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<tinyxml2.h>
@@ -36942,14 +36950,14 @@
 	"../color.h"
 	"../window.h"
 
-1009833248 d:\prog\131\src\render\particles.h
+1457185155 d:\prog\131\src\render\particles.h
 	"../common.h"
 	<vector>
 	<string>
 	"buffer.h"
 	"atlas.h"
 
-1009848568 source:d:\prog\131\src\hero.cpp
+1457180894 source:d:\prog\131\src\hero.cpp
 	"render/primitives.h"
 	"resources.h"
 	"hero.h"
@@ -36959,17 +36967,370 @@
 	<cmath>
 	"level.h"
 
-1009848170 d:\prog\131\src\hero.h
+1457180782 d:\prog\131\src\hero.h
 	"common.h"
+	"render/atlas.h"
 
 1009849246 d:\prog\131\src\level.h
 	"common.h"
 	"hero.h"
 
-1457020411 source:d:\prog\131\src\level.cpp
+1457255495 source:d:\prog\131\src\level.cpp
 	"level.h"
 	"hero.h"
+	"render/particles.h"
 	"resources.h"
 	"window.h"
 	<cmath>
+
+1457544055 source:d:\prog\131\src\render\model.cpp
+	<glm/gtc/matrix_transform.hpp>
+	<cstring>
+	"render.h"
+	"model.h"
+
+1457473355 d:\prog\131\src\render\model.h
+	<glm/mat4x4.hpp>
+	<glm/vec3.hpp>
+	<string>
+	<vector>
+	"texture.h"
+	"type.h"
+
+1457385395 d:\prog\131\include\glm\mat4x4.hpp
+	"detail/type_mat4x4.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat4x4.hpp
+	"../fwd.hpp"
+	"type_vec4.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat4x4.inl"
+
+1457385394 d:\prog\131\include\glm\fwd.hpp
+	"detail/type_int.hpp"
+	"detail/type_float.hpp"
+	"detail/type_vec.hpp"
+	"detail/type_mat.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_int.hpp
+	"setup.hpp"
+	<type_traits>
+	<cstdint>
+
+1457385396 d:\prog\131\include\glm\detail\setup.hpp
+	<cassert>
+	<cstddef>
+	<cuda.h>
+	<intrin.h>
+	<immintrin.h>
+	<immintrin.h>
+	<smmintrin.h>
+	<pmmintrin.h>
+	<emmintrin.h>
+	<__config>
+
+1457385396 d:\prog\131\include\glm\detail\type_float.hpp
+	"setup.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_vec.hpp
+	"precision.hpp"
+	"type_int.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\precision.hpp
+
+1457385396 d:\prog\131\include\glm\detail\type_mat.hpp
+	"precision.hpp"
+
+1457385397 d:\prog\131\include\glm\detail\type_vec4.hpp
+	"setup.hpp"
+	"type_vec.hpp"
+	"_swizzle.hpp"
+	"_swizzle_func.hpp"
+	<cstddef>
+	"type_vec4.inl"
+
+1457385397 d:\prog\131\include\glm\detail\_swizzle.hpp
+
+1457385397 d:\prog\131\include\glm\detail\_swizzle_func.hpp
+
+1457385397 d:\prog\131\include\glm\detail\type_vec4.inl
+	"type_vec4_sse2.inl"
+	"type_vec4_avx.inl"
+	"type_vec4_avx2.inl"
+
+1457385397 d:\prog\131\include\glm\detail\type_vec4_sse2.inl
+
+1457385397 d:\prog\131\include\glm\detail\type_vec4_avx.inl
+
+1457385397 d:\prog\131\include\glm\detail\type_vec4_avx2.inl
+
+1457385396 d:\prog\131\include\glm\detail\type_mat4x4.inl
+
+1457385395 d:\prog\131\include\glm\vec3.hpp
+	"detail/type_vec3.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_vec3.hpp
+	"type_vec.hpp"
+	"_swizzle.hpp"
+	"_swizzle_func.hpp"
+	<cstddef>
+	"type_vec3.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_vec3.inl
+
+1457385397 d:\prog\131\include\glm\gtc\matrix_transform.hpp
+	"../mat4x4.hpp"
+	"../vec2.hpp"
+	"../vec3.hpp"
+	"../vec4.hpp"
+	"../gtc/constants.hpp"
+	"matrix_transform.inl"
+
+1457385395 d:\prog\131\include\glm\vec2.hpp
+	"detail/type_vec2.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_vec2.hpp
+	"type_vec.hpp"
+	"_swizzle.hpp"
+	"_swizzle_func.hpp"
+	<cstddef>
+	"type_vec2.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_vec2.inl
+
+1457385395 d:\prog\131\include\glm\vec4.hpp
+	"detail/type_vec4.hpp"
+
+1457385397 d:\prog\131\include\glm\gtc\constants.hpp
+	"../detail/setup.hpp"
+	"constants.inl"
+
+1457385397 d:\prog\131\include\glm\gtc\constants.inl
+	<limits>
+
+1457385397 d:\prog\131\include\glm\gtc\matrix_transform.inl
+	"../geometric.hpp"
+	"../trigonometric.hpp"
+	"../matrix.hpp"
+
+1457385394 d:\prog\131\include\glm\geometric.hpp
+	"detail/func_geometric.hpp"
+
+1457385395 d:\prog\131\include\glm\detail\func_geometric.hpp
+	"type_vec3.hpp"
+	"func_geometric.inl"
+
+1457385395 d:\prog\131\include\glm\detail\func_geometric.inl
+	"func_exponential.hpp"
+	"func_common.hpp"
+	"type_vec2.hpp"
+	"type_vec4.hpp"
+	"type_float.hpp"
+
+1457385395 d:\prog\131\include\glm\detail\func_exponential.hpp
+	"type_vec1.hpp"
+	"type_vec2.hpp"
+	"type_vec3.hpp"
+	"type_vec4.hpp"
+	<cmath>
+	"func_exponential.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_vec1.hpp
+	"../fwd.hpp"
+	"type_vec.hpp"
+	"_swizzle.hpp"
+	"_swizzle_func.hpp"
+	<cstddef>
+	"type_vec1.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_vec1.inl
+
+1457385395 d:\prog\131\include\glm\detail\func_exponential.inl
+	"func_vector_relational.hpp"
+	"_vectorize.hpp"
+	<limits>
+	<cmath>
+	<cassert>
+
+1457385395 d:\prog\131\include\glm\detail\func_vector_relational.hpp
+	"precision.hpp"
+	"setup.hpp"
+	"func_vector_relational.inl"
+
+1457385395 d:\prog\131\include\glm\detail\func_vector_relational.inl
+	<limits>
+
+1457385397 d:\prog\131\include\glm\detail\_vectorize.hpp
+	"type_vec1.hpp"
+	"type_vec2.hpp"
+	"type_vec3.hpp"
+	"type_vec4.hpp"
+
+1457385395 d:\prog\131\include\glm\detail\func_common.hpp
+	"setup.hpp"
+	"precision.hpp"
+	"type_int.hpp"
+	"_fixes.hpp"
+	"func_common.inl"
+
+1457385397 d:\prog\131\include\glm\detail\_fixes.hpp
+	<cmath>
+
+1457385395 d:\prog\131\include\glm\detail\func_common.inl
+	"func_vector_relational.hpp"
+	"type_vec2.hpp"
+	"type_vec3.hpp"
+	"type_vec4.hpp"
+	"_vectorize.hpp"
+	<limits>
+
+1457385395 d:\prog\131\include\glm\trigonometric.hpp
+	"detail/func_trigonometric.hpp"
+
+1457385395 d:\prog\131\include\glm\detail\func_trigonometric.hpp
+	"setup.hpp"
+	"precision.hpp"
+	"func_trigonometric.inl"
+
+1457385395 d:\prog\131\include\glm\detail\func_trigonometric.inl
+	"_vectorize.hpp"
+	<cmath>
+	<limits>
+
+1457385395 d:\prog\131\include\glm\matrix.hpp
+	"detail/func_matrix.hpp"
+
+1457385395 d:\prog\131\include\glm\detail\func_matrix.hpp
+	"../detail/precision.hpp"
+	"../detail/setup.hpp"
+	"../detail/type_mat.hpp"
+	"../vec2.hpp"
+	"../vec3.hpp"
+	"../vec4.hpp"
+	"../mat2x2.hpp"
+	"../mat2x3.hpp"
+	"../mat2x4.hpp"
+	"../mat3x2.hpp"
+	"../mat3x3.hpp"
+	"../mat3x4.hpp"
+	"../mat4x2.hpp"
+	"../mat4x3.hpp"
+	"../mat4x4.hpp"
+	"func_matrix.inl"
+
+1457385394 d:\prog\131\include\glm\mat2x2.hpp
+	"detail/type_mat2x2.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat2x2.hpp
+	"../fwd.hpp"
+	"type_vec2.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat2x2.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat2x2.inl
+
+1457385394 d:\prog\131\include\glm\mat2x3.hpp
+	"detail/type_mat2x3.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat2x3.hpp
+	"../fwd.hpp"
+	"type_vec2.hpp"
+	"type_vec3.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat2x3.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat2x3.inl
+
+1457385394 d:\prog\131\include\glm\mat2x4.hpp
+	"detail/type_mat2x4.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat2x4.hpp
+	"../fwd.hpp"
+	"type_vec2.hpp"
+	"type_vec4.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat2x4.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat2x4.inl
+
+1457385395 d:\prog\131\include\glm\mat3x2.hpp
+	"detail/type_mat3x2.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat3x2.hpp
+	"../fwd.hpp"
+	"type_vec2.hpp"
+	"type_vec3.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat3x2.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat3x2.inl
+
+1457385395 d:\prog\131\include\glm\mat3x3.hpp
+	"detail/type_mat3x3.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat3x3.hpp
+	"../fwd.hpp"
+	"type_vec3.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat3x3.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat3x3.inl
+
+1457385395 d:\prog\131\include\glm\mat3x4.hpp
+	"detail/type_mat3x4.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat3x4.hpp
+	"../fwd.hpp"
+	"type_vec3.hpp"
+	"type_vec4.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat3x4.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat3x4.inl
+
+1457385395 d:\prog\131\include\glm\mat4x2.hpp
+	"detail/type_mat4x2.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat4x2.hpp
+	"../fwd.hpp"
+	"type_vec2.hpp"
+	"type_vec4.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat4x2.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat4x2.inl
+
+1457385395 d:\prog\131\include\glm\mat4x3.hpp
+	"detail/type_mat4x3.hpp"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat4x3.hpp
+	"../fwd.hpp"
+	"type_vec3.hpp"
+	"type_vec4.hpp"
+	"type_mat.hpp"
+	<limits>
+	<cstddef>
+	"type_mat4x3.inl"
+
+1457385396 d:\prog\131\include\glm\detail\type_mat4x3.inl
+
+1457385395 d:\prog\131\include\glm\detail\func_matrix.inl
+	"../geometric.hpp"
+	<limits>
 

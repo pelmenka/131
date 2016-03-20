@@ -1,17 +1,14 @@
-#ifndef RESOURCES_H_INCLUDED
-#define RESOURCES_H_INCLUDED
-
-#include <string>
+#pragma once
 #include "render/image.h"
 #include "render/atlas.h"
 #include "render/shader.h"
+#include "render/particles.h"
 
 namespace resources
 {
-extern render::image hero;
-extern render::textureAtlas bullets;
-void init();
-void free();
-}
+extern render::image tiles;
+extern render::textureAtlas bullets, entities, guns;
+extern render::effect2D bloodEffect, coolEffect;
 
-#endif // RESOURCES_H_INCLUDED
+void init();
+}

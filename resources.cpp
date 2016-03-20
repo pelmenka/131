@@ -4,24 +4,24 @@
 
 using namespace tinyxml2;
 
-#define TEXTURES_PATH "data/textures/"
+#define TEXTURE_PATH "data/textures/"
 
 namespace resources
 {
 
-render::image hero;
-render::textureAtlas bullets;
+render::image tiles;
+render::textureAtlas bullets, entities, guns;
+render::effect2D bloodEffect, coolEffect;
 
 void init()
 {
-    hero.load(TEXTURES_PATH"hero.png");
-    hero.center = vec2d(.5);
-    bullets.load("data/textures/bullet.atlas", 1);
-}
-
-void free()
-{
-
+    tiles.load(TEXTURE_PATH"tiles.png");
+    tiles.parts = vec2u(5, 1);
+    entities.load(TEXTURE_PATH"actors.atlas", 1);
+    bullets.load(TEXTURE_PATH"bullet.atlas", 1);
+    guns.load(TEXTURE_PATH"weapon.atlas");
+    bloodEffect.load("data/fx/blood.xml");
+    coolEffect.load("data/fx/cooler.xml");
 }
 
 }

@@ -1,5 +1,6 @@
 #include "atlas.h"
-#include <math.h>
+#include <GL/glew.h>
+#include <cmath>
 #include <tinyxml2.h>
 #include <list>
 #include "../log.h"
@@ -32,7 +33,7 @@ const vec4f &textureAtlas::getTexCoord(uint c) const
 
 #define CheckAttribute(x, y, z) \
         if(z->QueryAttribute(x, y))\
-            _log::out("[WARNING] Can't find attribute %s", x);
+            _log::out("[WARNING] Can't find attribute %s\n", x);
 
 
 bool textureAtlas::load(const std::string &path, bool smooth)
@@ -51,15 +52,17 @@ bool textureAtlas::load(const std::string &path, bool smooth)
 
     if(!texture::load(path.substr(0,path.rfind('/')+1)+element->Attribute("source"), smooth))
         return 0;
-
+    parameteri(GL_TEXTURE_WRAP_S, GL_CLAMP);
+    parameteri(GL_TEXTURE_WRAP_T, GL_CLAMP);
     element = element->FirstChildElement("sprite");
 
-    for(int i = 0; i < elCount && element; i++, element = element->NextSiblingElement())
+    for(int i = 0;element; i++, element = element->NextSiblingElement())
     {
         textureAtlasNode temp;
         temp.angle = 0;
         temp.scale = vec2f(1);
         temp.color = rgba(1);
+
 
         CheckAttribute("x", &temp.pos.x, element);
         CheckAttribute("y", &temp.pos.y, element);
@@ -67,16 +70,23 @@ bool textureAtlas::load(const std::string &path, bool smooth)
         CheckAttribute("h", &temp.size.y, element);
         CheckAttribute("pX", &temp.center.x, element);
         CheckAttribute("pY", &temp.center.y, element);
+
+        const char *name = element->Attribute("n");
+        if(name)
+            temp.name = name;
+        else _log::out("[WARNING] Can't find attribute \"n\"\n");
+
         temp.size += vec2f(1);
         elements.push_back(temp);
     }
+    _log::out("Elements count: %d\n", elements.size());
     return 1;
 }
 
-void textureAtlas::mathRotate(textureAtlasNode &p)
+void textureAtlas::mathRotate(textureAtlasNode &p) noexcept
 {
-    vec2f offset[6] = {{0, 1}, {1, 1}, {1, 0},
-                       {1, 0}, {0, 0}, {0, 1}};
+    vec2f offset[6] = {vec2f(0, 1), vec2f(1), vec2f(1, 0),
+                       vec2f(1, 0), vec2f(0), vec2f(0, 1)};
     float msin, mcos;
     sincosf(p.angle, &msin, &mcos);
 
@@ -90,10 +100,10 @@ void textureAtlas::mathRotate(textureAtlasNode &p)
     }
 }
 
-void textureAtlas::mathRotate(icon &p)
+void textureAtlas::mathRotate(icon &p) const noexcept
 {
-    vec2f offset[6] = {{0, 1}, {1, 1}, {1, 0},
-                       {1, 0}, {0, 0}, {0, 1}};
+    vec2f offset[6] = {vec2f(0, 1), vec2f(1), vec2f(1, 0),
+                       vec2f(1, 0), vec2f(0), vec2f(0, 1)};
     float msin, mcos;
     sincosf(p.angle, &msin, &mcos);
 
@@ -107,7 +117,7 @@ void textureAtlas::mathRotate(icon &p)
     }
 }
 
-void textureAtlas::draw(const vec2f&pos, uint p)
+void textureAtlas::draw(const vec2f&pos, uint p) noexcept
 {
     if(p >= elements.size())
         return;
@@ -132,7 +142,7 @@ void textureAtlas::draw(const vec2f&pos, uint p)
     render::_internal::_addTriangles2D(data, 6);
 }
 
-void textureAtlas::draw(const vec2f &pos, icon &p)
+void textureAtlas::draw(const vec2f &pos, icon &p) const noexcept
 {
     const vec2f offset[6] = {{0, 1}, {1, 1}, {1, 0},
                              {1, 0}, {0, 0}, {0, 1}};
@@ -157,13 +167,27 @@ void textureAtlas::draw(const vec2f &pos, icon &p)
     render::_internal::_addTriangles2D(data, 6);
 }
 
-icon textureAtlas::getIcon(uint c)
+icon textureAtlas::getIcon(uint c) const noexcept
 {
-    if(c >= elements.size())
-        c = 0;
     icon temp;
+    if(c >= elements.size())
+        return temp;
+
     memcpy(&temp, &elements[c], sizeof(textureAtlasNode));
     temp._parent = this;
+    return temp;
+}
+
+icon textureAtlas::getIcon(const std::string &name) const noexcept
+{
+    icon temp;
+    for(auto &i: elements)
+        if(i.name == name)
+        {
+            memcpy(&temp, &i, sizeof(textureAtlasNode));
+            temp._parent = this;
+            return temp;
+        }
     return temp;
 }
 
@@ -177,6 +201,11 @@ void icon::draw(const vec2f &pos)
 const vec2f &icon::getSize() const
 {
     return textureAtlasNode::size;
+}
+
+const vec2f *icon::getVertices() const noexcept
+{
+    return rotMatrix;
 }
 
 }

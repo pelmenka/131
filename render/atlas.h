@@ -16,6 +16,7 @@ struct textureAtlasNode
     vec2f rotMatrix[6];
     vec2f pos, size;
     vec4f color;
+    std::string name;
 
     inline bool operator!=(const textureAtlasNode &a) const noexcept{
         return a.angle != angle ||
@@ -40,8 +41,9 @@ public:
     icon():_parent(0){};
     void draw(const vec2f& = vec2f());
     const vec2f& getSize() const;
+    const vec2f *getVertices() const noexcept;
 private:
-    textureAtlas *_parent;
+    const textureAtlas *_parent;
 };
 
 class textureAtlas:public texture
@@ -53,18 +55,19 @@ public:
 
     bool load(const std::string&, bool = SMOOTH_BY_DEFAULT);
 
-    void draw(const vec2f&, uint);
-    void draw(const vec2f&, icon&);
+    void draw(const vec2f&, uint) noexcept;
+    void draw(const vec2f&, icon&) const noexcept;
 
-    icon getIcon(uint);
+    icon getIcon(uint) const noexcept;
+    icon getIcon(const std::string&) const noexcept;
 
     const vec4f &getTexCoord(uint) const;
     inline textureAtlasNode &operator[](uint a){return elements.at(a);}
 private:
 
     std::vector<textureAtlasNode> elements;
-    void mathRotate(textureAtlasNode&);
-    void mathRotate(icon&);
+    void mathRotate(textureAtlasNode&) noexcept;
+    void mathRotate(icon&) const noexcept;
 };
 
 }

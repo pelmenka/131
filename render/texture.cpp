@@ -154,10 +154,11 @@ void texture::parameteri(uint param, uint value)
 __glTexture::__glTexture(const std::string &name):_name(name)
 {
     glGenTextures(1, &obj);
+    _log::out("CREATE GL TEXTURE #%d\n", obj);
 }
 
 __glTexture::~__glTexture()
 {
+    _log::out("DELETE GL TEXTURE #%d\n", obj);
     glDeleteTextures(1, &obj);
-
 }

@@ -34,10 +34,7 @@ void emitter2D::update(const vec2f &pos)
         _oldParam.gravitySpeed = param.gravitySpeed;
     }*/
 
-    float delta = glfwGetTime() - _oldTime;
     _oldTime = glfwGetTime();
-
-
     if(param.workTime+_startTime < glfwGetTime())
     {
         if(param.looped)
@@ -52,14 +49,14 @@ void emitter2D::update(const vec2f &pos)
     float val = glfwGetTime()-_startTime/param.workTime;
 
     if(param.workTime+_startTime >= glfwGetTime())
-        _emissionCount += mathEmitterParam(currentNodes.z, emissionSpeed, val)*delta;
+        _emissionCount += mathEmitterParam(currentNodes.z, emissionSpeed, val)*window::deltaTime;
     if(_emissionCount > param.maxParticles)
         _emissionCount = param.maxParticles;
     float maxSpawn = _emissionCount;
     _drawCount = 0;
     for(uint i = 0; i < _data.size(); i++)
     {
-        if(!_update(i, delta))
+        if(!_update(i))
             if(_running
             && _emissionCount > 0)
             {
@@ -70,11 +67,11 @@ void emitter2D::update(const vec2f &pos)
     _oldPos = pos;
 }
 
-bool emitter2D::_update(uint c, float delta)
+bool emitter2D::_update(uint c)
 {
     if(_data[c].timer <= 0)
         return 0;
-    _data[c].timer -= delta;
+    _data[c].timer -= window::deltaTime;
     /*if(_data[c].speed.maxNodes)
         for(int i = 0; i < _data[c].speed.maxNodes; i++)
             _data[c].speed.values[i].value += _gravityModifier*delta;*/
@@ -88,7 +85,7 @@ bool emitter2D::_update(uint c, float delta)
     _partData[_drawCount].color = _data[c].color.math(val);
     _partData[_drawCount].alpha = _data[c].alpha.math(val);
 
-    _data[c].pos += _data[c].direction.math(val)*_data[c].speed.math(val)*delta;
+    _data[c].pos += _data[c].direction.math(val)*_data[c].speed.math(val)*window::deltaTime;
     _partData[_drawCount].vert = vec3f(_data[c].pos.x, _data[c].pos.y, _data[c].scale.math(val));
     _drawCount++;
     return 1;
@@ -176,17 +173,17 @@ void emitter2D::_spawn(uint c, const vec2f &pos)
         _data[c].speed.values[i].time  = particles.speed[i].time;
     }
 
-    _update(c, 0);
+    //_update(c, 0);
 }
 
 void emitter2D::draw()
 {
     if(!_data.size() || !_drawCount)
         return;
-    if(param.blendMode)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if(!param.blendMode)
+        setBlendMode(blendMode::normal);
     else
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        setBlendMode(blendMode::add);
 
     if(_atlas)
         _atlas->bind();
@@ -296,7 +293,7 @@ bool effect2D::load(const std::string &path)
         tinyxml2::XMLElement *element, *nElement, *pElement;
 
         root->QueryAttribute("maxParticles", &tempEmitter->param.maxParticles);
-        root->QueryAttribute("timer", &tempEmitter->param.workTime);
+        root->QueryAttribute("time", &tempEmitter->param.workTime);
         root->QueryAttribute("looped", &tempEmitter->param.looped);
         tempEmitter->setTextureAtlas(0);
         if(element = root->FirstChildElement("atlas"))
@@ -737,8 +734,8 @@ float mathEmitterParam(uint id, const std::vector<render::emitterParameter<float
 
 void parseColor(const char *str, vec3f *out)
 {
-    if(!str || !out) return;
-    sscanf(str, "%f;%f;%f", &out->x, &out->y, &out->z);
+    if(str && out)
+        sscanf(str, "%f;%f;%f", &out->x, &out->y, &out->z);
 }
 
 float urandom()

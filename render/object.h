@@ -6,9 +6,10 @@ namespace render
     {
     public:
         virtual void free() = 0;
+
+    protected:
         void _addToList();
         void _removeFromList();
-    protected:
         virtual void _alloc() = 0;
     };
 }

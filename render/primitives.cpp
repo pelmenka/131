@@ -14,7 +14,8 @@ uint pointCount, lineCount, triangleCount;
 render::vertexArray  VAO[3];
 render::vertexBuffer VBO[3];
 
-BEGIN_PRIMITIVES2D_NAMESPACE
+namespace render{
+namespace primitives2d{
 
 rgba pointColor= {1, 1, 1, 1},
      lineColor = {1, 1, 1, 1},
@@ -69,15 +70,25 @@ void triangle(const vec2f &p1, const vec2f &p2, const vec2f &p3,
 ********************************************/
 
 //ну и говно
-void quad(const vec2f &pos, const vec2f &size, const vec2f &tex1, const vec2f &tex2, const rgba &color)
+void quad(const vec2f &pos, const vec2f &size, const rgba &color)
 {
     const vec2f offset[6] = {{0, 1}, {1, 1}, {1, 0},
-                       {1, 0}, {0, 0}, {0, 1}};
+                             {1, 0}, {0, 0}, {0, 1}};
 
-    for(int i = 0; i < 2; i++)
-        triangle(pos+offset[i*3]*size, pos+offset[i*3+1]*size, pos+offset[i*3+2]*size,
-                 tex1+offset[i*3]*tex2, tex1+offset[i*3+1]*tex2, tex1+offset[i*3+2]*tex2,
-                 color, color, color);
+    type2D::texVert data[6];
+
+    const shader *shad = render::getActiveShader();
+    if(!shad
+    || shad->type != shader::shaderType::primitives
+    || shad->standart)
+        render::defaultResources::primitivesShader.bind();
+
+    for(int i = 0; i < 6; i++)
+    {
+        data[i].vert = pos+size*offset[i];
+        data[i].color = color;
+    }
+    render::_internal::_addTriangles2D(data, 6);
 }
 
 void circle(const vec2f &pos, float length, const rgba &color, float angle, uint samples)
@@ -339,4 +350,4 @@ void drawGui(const vec2f &pos, float type, const vec2f &size, const vec4f &color
     render::_internal::_addTriangles3D(data, addr);
 }
 
-END_PRIMITIVES2D_NAMESPACE
+}}

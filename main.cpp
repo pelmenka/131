@@ -13,6 +13,9 @@
 #include "render/particles.h"
 #include "hero.h"
 #include "level.h"
+#include "render/model.h"
+#include "render/text.h"
+#include "hud.h"
 
 void init();
 void close();
@@ -22,23 +25,35 @@ int main()
 {
     init();
     resources::init();
-    hero testHero;
     level::init();
+    hud::init();
+
+    render::effect2D cooler("data/fx/cooler.xml");
+
+    cooler.start();
+
     while(!window::shouldClose())
     {
-        testHero.update();
-        level::update(&testHero);
+        hud::update();
+        level::update();
+        cooler.update();
+
 
         render::clearScreen();
         render::mode2D();
-
-        testHero.draw();
+        cooler.draw();
         level::draw();
+        render::endDraw();
 
+        render::camera.pos = vec3f(0);
+        render::mode2D();
+        hud::draw();
         render::endDraw();
         window::swapBuffers();
         glfwPollEvents();
     }
+    level::close();
+
     close();
 }
 

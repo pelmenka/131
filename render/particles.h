@@ -88,7 +88,7 @@ public:
     bool isRunning();
 
 protected:
-    bool _update(uint, float);
+    bool _update(uint);
     void _spawn(uint, const vec2f&);
 private:
     effect2D *_parent;

@@ -1,15 +1,12 @@
-#ifndef PRIMITIVES2_H_INCLUDED
-#define PRIMITIVES2_H_INCLUDED
+#pragma once
 
 #include "render.h"
 #include "type.h"
 
-#define BEGIN_PRIMITIVES2D_NAMESPACE namespace render{namespace primitives2d{
-#define END_PRIMITIVES2D_NAMESPACE }}
-
 typedef vec4f rgba;
 
-BEGIN_PRIMITIVES2D_NAMESPACE
+namespace render{
+namespace primitives2d{
 
 extern rgba pointColor, lineColor, fillColor;
 
@@ -26,9 +23,7 @@ void triangle(const vec2f&, const vec2f&, const vec2f&, // x/y
               const rgba& = fillColor, const rgba& = fillColor, const rgba& = fillColor); // color
 
 //квадрат
-void quad(const vec2f& pos, const vec2f& size,
-          const vec2f& = {0, 0}, const vec2f& = {1, 1}, // u/v
-          const rgba& = fillColor);
+void quad(const vec2f& pos, const vec2f& size, const rgba& = fillColor);
 
 //круг из треугольников
 void circle(const vec2f& pos, float radius, const rgba& = fillColor, float angle = 0, uint edges = 0);
@@ -57,7 +52,6 @@ void ringArkBorder(const vec2f &pos, float radius, float radius2, float angle, f
 
 void drawGui(const vec2f& pos, float type, const vec2f& size, const rgba& color);
 
+}
 
-END_PRIMITIVES2D_NAMESPACE
-
-#endif // PRIMITIVES2_H_INCLUDED
+}
