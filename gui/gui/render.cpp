@@ -20,8 +20,8 @@ void button::draw()
         color = mix(hoverColor, activeColor, _smoothState*2);
 
     render::primitives2d::drawGui(pos, _smoothState, size, color);
-    label.draw(pos+size/2-label.rect/2/*+vec2f(icon.size().x, 0)/2*/);
-//    icon.draw(pos+size/2-icon.size()/2-vec2f(label.rect.x, 0)/2);
+    label.draw(pos+size/2-label.rect/2+vec2f(icon.getSize().x, 0)/2);
+    icon.draw(pos+size/2-icon.getSize()/2-vec2f(label.rect.x, 0)/2);
 }
 
 void checkbox::draw()
