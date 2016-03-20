@@ -5,6 +5,7 @@
 #define DTOR 3.1415/180.0
 
 #include <initializer_list>
+#include <cmath>
 
 #ifndef _STL_ALGOBASE_H
 
@@ -214,7 +215,8 @@ struct vec2
         return !(operator>=(a));
     }
 
-
+    inline T length() const noexcept{return sqrt(x*x+y*y);}
+    inline vec2<T> normalize() const noexcept{return *this/length();}
 
     inline T &max(){return max(x, y);}
     inline T &min(){return min(x, y);}
@@ -226,6 +228,12 @@ struct vec2
     inline T dot(const vec2<S> &a) const noexcept
     {
         return T(x*a.x+y*a.y);
+    }
+
+    template <typename S>
+    inline T cross(const vec2<S> &a) const noexcept
+    {
+        return T(x*a.y-y*a.x);
     }
 
     inline vec2<T> yx() const noexcept
