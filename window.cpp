@@ -20,11 +20,13 @@ double deltaTime;
 void createWindow(const vec2i &size, const std::string &name)
 {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 16);
     handle = glfwCreateWindow(size.x, size.y, name.c_str(), 0, 0);
     glfwMakeContextCurrent(handle);
     glfwSwapInterval(1);
+    glewExperimental = 1;
     glewInit();
     glfwSetKeyCallback(handle, [](GLFWwindow*, int key, int, int act, int){inputKeys[key] = act;});
     glfwSetMouseButtonCallback(handle, [](GLFWwindow*, int key, int act, int){inputKeys[key] = act;});

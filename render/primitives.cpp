@@ -70,16 +70,8 @@ void triangle(const vec2f &p1, const vec2f &p2, const vec2f &p3,
 ********************************************/
 
 //ну и говно
-void quad(const vec2f &pos, const vec2f &size, const vec2f &tex1, const vec2f &tex2, const rgba &color)
+void quad(const vec2f &pos, const vec2f &size, const rgba &color)
 {
-    /*const vec2f offset[6] = {{0, 1}, {1, 1}, {1, 0},
-                       {1, 0}, {0, 0}, {0, 1}};
-
-    for(int i = 0; i < 2; i++)
-        triangle(pos+offset[i*3]*size, pos+offset[i*3+1]*size, pos+offset[i*3+2]*size,
-                 tex1+offset[i*3]*tex2, tex1+offset[i*3+1]*tex2, tex1+offset[i*3+2]*tex2,
-                 color, color, color);*/
-
     const vec2f offset[6] = {{0, 1}, {1, 1}, {1, 0},
                              {1, 0}, {0, 0}, {0, 1}};
 
@@ -94,7 +86,6 @@ void quad(const vec2f &pos, const vec2f &size, const vec2f &tex1, const vec2f &t
     for(int i = 0; i < 6; i++)
     {
         data[i].vert = pos+size*offset[i];
-        data[i].texCoord.x = 1;
         data[i].color = color;
     }
     render::_internal::_addTriangles2D(data, 6);

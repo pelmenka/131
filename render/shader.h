@@ -1,20 +1,23 @@
 #pragma once
 
+#include <glm/mat4x4.hpp>
 #include <list>
 #include <string>
 #include "object.h"
 #include "../common.h"
 
-#define   SHADER_VERTEX 0
+#define SHADER_VERTEX   0
 #define SHADER_FRAGMENT 1
 #define SHADER_GEOMETRY 2
+
+#define SHADER_SOURCE_PATH "data/shaders/source/"
+#define SHADER_BINARY_PATH "data/shaders/binary/"
 
 namespace render{
 
 class shader:_object
 {
 public:
-
     enum class shaderType
     {
         regular = 0,
@@ -38,11 +41,11 @@ public:
     void unbind() const;
 
     bool attach(const std::string&, uint);
-    bool linkProgram();
+    bool linkProgram(bool binaryHint = 0);
     bool validate();
 
-    bool loadBinary(const std::string&, uint = 0x666); //why not?
-    bool saveBinary(const std::string&, uint = 0x666);
+    bool loadBinary(const std::string&);
+    bool saveBinary(const std::string&);
 
     void free();
 
@@ -52,6 +55,10 @@ public:
 
     void bindAttribLocation(const std::string&, uint);
     uint getAttribLocation(const std::string&);
+
+    void loadProjectionMatrix(const glm::mat4&);
+    void loadModelMatrix(const glm::mat4&);
+    void loadViewMatrix(const glm::mat4&);
 
     void uniform1f(const std::string&, float);
     void uniform2f(const std::string&, float, float);
@@ -75,9 +82,10 @@ public:
 
     void uniform4x4(const std::string&, uint, const float*);
 private:
-    bool _needLoadMatrix, _linked;
+    bool _needLoadProjMatrix, _needLoadViewMatrix, _linked;
     void _alloc();
-    static void _printError(uint i);
+    static void _printSError(uint i);
+    static void _printPError(uint i);
     uint shaders[3], program, _attachedShaders;
     struct _uniform{int loc; std::string name; _uniform(int l, const std::string &n):loc(l), name(n){}};
     std::list<_uniform> _uniformLoc;

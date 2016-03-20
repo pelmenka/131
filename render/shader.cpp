@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <memory.h>
 #include "shader.h"
+#include "render.h"
 #include "../log.h"
 
 namespace render{
@@ -25,7 +26,7 @@ shader::~shader()
 
 int shader::getUniformLocation(const std::string &name)
 {
-    if(!linked)
+    if(!_linked)
         return -1;
     bind();
     for(auto &i: _uniformLoc)
@@ -38,22 +39,24 @@ int shader::getUniformLocation(const std::string &name)
 
 void shader::_alloc()
 {
+    program = glCreateProgram();
     _addToList();
 }
 
 bool shader::attach(const std::string &path, uint s)
 {
     if(_linked)
-        return;
+        return 0;
     if(s > SHADER_GEOMETRY)
-        return;
+        return 0;
 
     if(!program)
-        program = glCreateProgram();
+        _alloc();
 
     uint types[3] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_GEOMETRY_SHADER};
     const char *names[] = {"vertex", "fragment", "geometry"};
     _log::out("Loading %s shader: %s ", names[s], path.c_str());
+    FILE *src;
     try
     {
         int length;
@@ -65,33 +68,36 @@ bool shader::attach(const std::string &path, uint s)
         if(!(length = ftell(src)))
             throw "File is empty";
         fseek(src, 0, 0);
-        source = new char[length+1];
+        GLchar *source = new char[length+1];
         memset(source, 0, length+1);
         fread(source, 1, length, src);
 
         if(!glIsShader(shaders[s]))
             shaders[s] = glCreateShader(types[s]);
         else
-            glDetachShader(program, shaders[s]);
-
-        const char *s = source;
-        glShaderSource(shaders[s], 1, &s, 0);
+            if(_attachedShaders&(1<<s))
+            {
+                glDetachShader(program, shaders[s]);
+                _attachedShaders ^= (1<<s);
+            }
+        const char *txt = source;
+        glShaderSource(shaders[s], 1, &txt, 0);
         glCompileShader(shaders[s]);
         delete [] source;
 
         int status = 0;
-        glGetShaderiv(shaders[s], GL_COMPILE_STATUS, status);
-        if(!log)
+        glGetShaderiv(shaders[s], GL_COMPILE_STATUS, &status);
+        if(!status)
             throw "Compile Error";
 
         glAttachShader(program, shaders[s]);
-
+        _attachedShaders |= (1<<s);
         fclose(src);
     }
-    catch(const char* s)
+    catch(const char* msg)
     {
-        _log::out("[FAIL]\n%s\n", s);
-        _printError(shaders[shad]);
+        _log::out("[FAIL]\n%s\n", msg);
+        _printSError(shaders[s]);
         if(src)
             fclose(src);
         return 0;
@@ -100,10 +106,12 @@ bool shader::attach(const std::string &path, uint s)
     return 1;
 }
 
-bool shader::linkProgram()
+bool shader::linkProgram(bool binaryHint)
 {
     if(_linked)
-        return;
+        return 0;
+    if(binaryHint)
+        glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
     glLinkProgram(program);
     int lenth;
 
@@ -111,8 +119,8 @@ bool shader::linkProgram()
     glGetProgramiv(program, GL_LINK_STATUS, &lenth);
     if(!lenth)
     {
-        _log::out("[FAIL]\n", mess);
-        _printError(program);
+        _log::out("[FAIL]\n");
+        _printPError(program);
         return 0;
     }
     _log::out("[ OK ]\n");
@@ -122,12 +130,77 @@ bool shader::linkProgram()
 
 bool shader::validate()
 {
-    if(!_linked) return;
+    if(!_linked) return 0;
     glValidateProgram(program);
     int s = -1;
     glGetProgramiv(program, GL_VALIDATE_STATUS, &s);
     _log::out("Validate shader %s\n", (s==1)?"[ OK ]":"[FAIL]");
     return s;
+}
+
+bool shader::loadBinary(const std::string &path)
+{
+    if(_linked)
+        return 0;
+    int formatsCount = 0, length = 0;
+    GLenum format;
+    _log::out("loading binary shader: %s ", path.c_str());
+    FILE *f;
+    try
+    {
+        if(!(f = fopen(path.c_str(), "rb")))
+            throw "Failed to open file";
+        fseek(f, 0, 2);
+        if(!(length = ftell(f)))
+            throw "File is empty";
+        fseek(f, 0, 0);
+        length -= sizeof(GLenum);
+        char *data = new char[length];
+        fread(&format, sizeof(GLenum), 1, f);
+        fread(data, length, 1, f);
+
+        _alloc();
+        glProgramBinary(program, format, data, length);
+        delete [] data;
+        glGetProgramiv(program, GL_LINK_STATUS, &length);
+        if(!length)
+            throw "Some error";
+        _linked = 1;
+        fclose(f);
+    }
+    catch(const char* msg)
+    {
+        _log::out("[FAIL]\n%s\n", msg);
+        _printPError(program);
+        if(f)
+            fclose(f);
+        return 0;
+    }
+    _log::out("[ OK ]\n");
+    return 1;
+}
+
+bool shader::saveBinary(const std::string &path)
+{
+    if(!_linked)
+        return 0;
+    int length = 0;
+    glGetProgramiv(program, GL_PROGRAM_BINARY_LENGTH, &length);
+    if(!length)
+        return 0;
+    char *data = new char[length];
+    GLenum format;
+    glGetProgramBinary(program, length, 0, &format, data);
+    FILE *out = fopen(path.c_str(), "wb");
+    if(out)
+    {
+        fwrite(&format, sizeof(GLenum), 1, out);
+        fwrite(data, length, 1, out);
+        fclose(out);
+    }
+    _linked = 0;
+    delete [] data;
+    return 1;
 }
 
 void shader::bind()
@@ -145,14 +218,7 @@ void shader::unbind() const
     render::_internal::_bindShader(0);
 }
 
-bool shader::_linkOk(GLuint i)
-{
-    int log = 0;
-    glGetShaderiv(i, GL_LINK_STATUS, &log);
-    return log;
-}
-
-void shader::_printError(GLuint i)
+void shader::_printSError(GLuint i)
 {
     int log = 0;
     glGetShaderiv(i, GL_INFO_LOG_LENGTH, &log);
@@ -164,24 +230,52 @@ void shader::_printError(GLuint i)
     delete [] mess;
 }
 
+void shader::_printPError(GLuint i)
+{
+    int log = 0;
+    glGetProgramiv(i, GL_INFO_LOG_LENGTH, &log);
+    if(!log)
+        return;
+    char *mess = new char[log];
+    glGetProgramInfoLog(i, log, 0, mess);
+    _log::out("\t%s\n", mess);
+    delete [] mess;
+}
+
 void shader::free()
 {
-    /*unbind();
+    unbind();
     if(glIsProgram(program))
     {
-        glDetachShader(program, shaders[0]);
-        glDetachShader(program, shaders[1]);
+        for(int i = 0 ; i < 3; i++)
+            if(_attachedShaders&(1<<i))
+                glDetachShader(program, shaders[i]);
         glDeleteProgram(program);
         program = 0;
+        _attachedShaders = 0;
     }
-
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 3; i++)
         if(glIsShader(shaders[i]))
         {
             glDeleteShader(shaders[i]);
             shaders[i] = 0;
-        }*/
+        }
     _removeFromList();
+}
+
+void shader::loadProjectionMatrix(const glm::mat4 &mat)
+{
+    uniform4x4(projectionMatrixName, 1, &mat[0][0]);
+}
+
+void shader::loadModelMatrix(const glm::mat4 &mat)
+{
+    uniform4x4(modelMatrixName, 1, &mat[0][0]);
+}
+
+void shader::loadViewMatrix(const glm::mat4 &mat)
+{
+    uniform4x4(viewMatrixName, 1, &mat[0][0]);
 }
 
 void shader::bindAttribLocation(const std::string &name, uint val)

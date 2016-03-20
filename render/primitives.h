@@ -23,9 +23,7 @@ void triangle(const vec2f&, const vec2f&, const vec2f&, // x/y
               const rgba& = fillColor, const rgba& = fillColor, const rgba& = fillColor); // color
 
 //квадрат
-void quad(const vec2f& pos, const vec2f& size,
-          const vec2f& = {0, 0}, const vec2f& = {1, 1}, // u/v
-          const rgba& = fillColor);
+void quad(const vec2f& pos, const vec2f& size, const rgba& = fillColor);
 
 //круг из треугольников
 void circle(const vec2f& pos, float radius, const rgba& = fillColor, float angle = 0, uint edges = 0);
